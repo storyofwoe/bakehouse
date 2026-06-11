@@ -8,3 +8,6 @@ cdk.out
 /client/.env.production
 
 .github/todo.txt
+
+.github/workflows/timi-deploy.yml
+# test file sent by colleague
