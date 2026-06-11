@@ -1,12 +1,10 @@
-# Welcome to your CDK JavaScript project
+# bakehouse project
 
-This is a blank project for CDK development with JavaScript.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app. The build step is not required when using JavaScript.
-
-## Useful commands
-
-* `npm run test`         perform the jest unit tests
-* `npx cdk deploy`       deploy this stack to your default AWS account/region
-* `npx cdk diff`         compare deployed stack with current state
-* `npx cdk synth`        emits the synthesized CloudFormation template
+1. Navigate to ```bakehouse-app/```.
+2. In your CLI, run ```echo "export BAKEHOUSE_STACK_NAME=<your name>-bakehouse" >> ~/.bashrc```, replacing ```<your name>``` with your full name to avoid naming conflicts.
+3. Install dependencies via ```./install.sh```.
+4. Run ```aws sso configure```.
+5. Run ```aws sso login --profile student```.
+6. Check: ```aws sts get-caller-identity --profile student```
+7. Synthesise the stack: ```npx cdk synth```.
+8. Deploy the stack: ```npx cdk deploy```.
