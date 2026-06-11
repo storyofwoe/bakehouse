@@ -1,0 +1,37 @@
+name: Deploy bakehouse via GitHub actions
+
+on:
+  push:
+    branches: [bakehouse-deploy]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: eu-west-2
+  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  deploy:
+    name: Deploy bakehouse
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect environment
+        id: detect-env
+        run: |
+          BRANCH_NAME="${{ github.ref }}"
+          if [[ "${BRANCH_NAME}" == "refs/heads/main" ]]; then
+              ENV="staging"
+              ACCOUNT="827602716979"
+          else
+              ENV="dev"
+              ACCOUNT="827602716979"
+          fi
+          echo "environment=${ENV}" >> $GITHUB_OUTPUT
+          echo "account=${ACCOUNT}" >> $GITHUB_OUTPUT
