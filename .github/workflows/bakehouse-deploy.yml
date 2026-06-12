@@ -34,20 +34,22 @@ jobs:
       
       # run unit tests
 
-  aws-configure:
-    name: Configure AWS
+  deploy:
+    name: Synthesise and deploy bakehouse stack
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Additional steps
+      - name: Verify AWS Credentials
         run: |
-          # Your commands that require AWS credentials
           # aws sts get-caller-identity
           aws_arn=$(aws sts get-caller-identity --query Arn --output text)
           printf '%s\n' "Identity: $aws_arn"
@@ -55,15 +57,6 @@ jobs:
             echo "❌ AWS configure failed!"
             exit 1
           fi
-
-  synth-stack:
-    name: Synthesise bakehouse stack
-    needs: [aws-configure]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
