@@ -71,8 +71,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Synthesise
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Synthesise
         run: npx cdk synth
 
   
