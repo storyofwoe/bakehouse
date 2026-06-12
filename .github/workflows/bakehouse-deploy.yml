@@ -57,6 +57,7 @@ jobs:
         run: |
           # Your commands that require AWS credentials
           echo "aws_arn=aws sts get-caller-identity --query Arn --output text" >> $GITHUB_ENV
+          echo "Identity: ${aws_arn}"
           if [[ "${aws_arn}" != *"${{ vars.EXPECTED_ARN_NAME }}"* ]]; then
             echo "❌ AWS configure failed!"
             exit 1
