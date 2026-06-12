@@ -56,6 +56,7 @@ jobs:
       - name: Additional steps
         run: |
           # Your commands that require AWS credentials
+          aws sts get-caller-identity
           echo "aws_arn=aws sts get-caller-identity --query Arn --output text" >> $GITHUB_ENV
           echo "Identity: ${aws_arn}"
           if [[ "${aws_arn}" != *"${{ vars.EXPECTED_ARN_NAME }}"* ]]; then
