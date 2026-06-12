@@ -4,7 +4,7 @@ set -e
 echo "Starting Bakehouse front end build..."
 
 # Expect the stack name to be passed in
-if [ -z "$BAKEHOUSE_STACK_NAME" ]; then
+if [ -z ${{ env.BAKEHOUSE_STACK_NAME }} ]; then
   echo "BAKEHOUSE_STACK_NAME is not set"
   exit 1
 fi
