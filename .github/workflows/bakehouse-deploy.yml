@@ -30,10 +30,6 @@ jobs:
       #     echo "environment=${ENV}" >> $GITHUB_OUTPUT
       #     echo "account=${ACCOUNT}" >> $GITHUB_OUTPUT
 
-      
-      
-      # run unit tests
-
   deploy:
     name: Synthesise and deploy bakehouse stack
     runs-on: ubuntu-latest
@@ -66,4 +62,5 @@ jobs:
       - name: Synthesise
         run: npx cdk synth
 
-  
+      - name: Deploy
+        run: npx cdk deploy --require-approval never
