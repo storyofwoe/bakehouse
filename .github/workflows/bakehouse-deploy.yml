@@ -15,32 +15,22 @@ env:
   BAKEHOUSE_STACK_NAME: ${{ vars.BAKEHOUSE_STACK_NAME }}
 
 jobs:
-  setup:
-    name: Setup for deployment
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # - name: Detect environment
+      #   id: detect-env
+      #   run: |
+      #     BRANCH_NAME="${{ github.ref }}"
+      #     if [[ "${BRANCH_NAME}" == "refs/heads/main" ]]; then
+      #         ENV="staging"
+      #         ACCOUNT="827602716979"
+      #     else
+      #         ENV="dev"
+      #         ACCOUNT="827602716979"
+      #     fi
+      #     echo "environment=${ENV}" >> $GITHUB_OUTPUT
+      #     echo "account=${ACCOUNT}" >> $GITHUB_OUTPUT
 
-      - name: Detect environment
-        id: detect-env
-        run: |
-          BRANCH_NAME="${{ github.ref }}"
-          if [[ "${BRANCH_NAME}" == "refs/heads/main" ]]; then
-              ENV="staging"
-              ACCOUNT="827602716979"
-          else
-              ENV="dev"
-              ACCOUNT="827602716979"
-          fi
-          echo "environment=${ENV}" >> $GITHUB_OUTPUT
-          echo "account=${ACCOUNT}" >> $GITHUB_OUTPUT
-
-      - name: Install dependencies
-        run: |
-          bash ./install.sh
-          npm install aws-cdk-lib
+      
       
       # run unit tests
 
@@ -68,12 +58,17 @@ jobs:
 
   synth-stack:
     name: Synthesise bakehouse stack
-    needs: [setup, aws-configure]
+    needs: [aws-configure]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          bash ./install.sh
+          npm install aws-cdk-lib
 
       - name: Synthesise
         run: npx cdk synth
