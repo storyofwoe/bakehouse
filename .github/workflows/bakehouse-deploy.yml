@@ -12,26 +12,55 @@ env:
   AWS_REGION: eu-west-2
   AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  BAKEHOUSE_STACK_NAME: ${{ vars.BAKEHOUSE_STACK_NAME }}
 
 jobs:
+
+      # - name: Detect environment
+      #   id: detect-env
+      #   run: |
+      #     BRANCH_NAME="${{ github.ref }}"
+      #     if [[ "${BRANCH_NAME}" == "refs/heads/main" ]]; then
+      #         ENV="staging"
+      #         ACCOUNT="827602716979"
+      #     else
+      #         ENV="dev"
+      #         ACCOUNT="827602716979"
+      #     fi
+      #     echo "environment=${ENV}" >> $GITHUB_OUTPUT
+      #     echo "account=${ACCOUNT}" >> $GITHUB_OUTPUT
+
   deploy:
-    name: Deploy bakehouse
+    name: Synthesise and deploy bakehouse stack
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Detect environment
-        id: detect-env
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify AWS Credentials
         run: |
-          BRANCH_NAME="${{ github.ref }}"
-          if [[ "${BRANCH_NAME}" == "refs/heads/main" ]]; then
-              ENV="staging"
-              ACCOUNT="827602716979"
-          else
-              ENV="dev"
-              ACCOUNT="827602716979"
+          # aws sts get-caller-identity
+          aws_arn=$(aws sts get-caller-identity --query Arn --output text)
+          printf '%s\n' "Identity: $aws_arn"
+          if [[ "${aws_arn}" != *"${{ vars.EXPECTED_ARN_NAME }}"* ]]; then
+            echo "❌ AWS configure failed!"
+            exit 1
           fi
-          echo "environment=${ENV}" >> $GITHUB_OUTPUT
-          echo "account=${ACCOUNT}" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: |
+          bash ./install.sh
+          npm install aws-cdk-lib
+
+      - name: Synthesise
+        run: npx cdk synth
+
+      - name: Deploy
+        run: npx cdk deploy --require-approval never
