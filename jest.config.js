@@ -1,3 +1,8 @@
 module.exports = {
-  testEnvironment: 'node'
+  testEnvironment: 'node',
+  testMatch: ['**/testing/**/*.test.js'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/playwright/'
+  ]
 }
