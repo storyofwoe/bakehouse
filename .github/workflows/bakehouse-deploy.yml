@@ -14,8 +14,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  deploy:
-    name: Deploy bakehouse
+  setup:
+    name: Setup for deployment
     runs-on: ubuntu-latest
 
     steps:
@@ -35,3 +35,32 @@ jobs:
           fi
           echo "environment=${ENV}" >> $GITHUB_OUTPUT
           echo "account=${ACCOUNT}" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: |
+          bash ./install.sh
+      
+      # run unit tests
+
+      - name: Add environment variables
+        run: |
+          STACK_NAME = process.env.BAKEHOUSE_STACK_NAME
+
+  aws-configure:
+    name: Configure AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: $AWS_ROLE_ARN
+          aws-region: $AWS_REGION
+      - name: Additional steps
+        run: |
+          # Your commands that require AWS credentials
+          echo "aws-arn=aws sts get-caller-identity --query Arn --output text" >> $GITHUB_ENV
+          if [[ "${aws-arn}" -ne *"j.mewett"* ]]; then
+            echo "❌ AWS configure failed!"
+            exit 1
+          fi
